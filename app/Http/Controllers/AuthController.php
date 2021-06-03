@@ -62,7 +62,7 @@ class AuthController extends Controller
     public function create(Request $request) {
         // POST *api/user (name, email, password, birthdate)
         $array = ['error'=>''];
-
+        // Pega os campos digitados pelo usuário
         $name = $request->input('name');
         $email = $request->input('email');
         $password = $request->input('password');
@@ -78,7 +78,7 @@ class AuthController extends Controller
             // Verificar existência de email
             $emailExists = User::where('email', $email)->count();
             if($emailExists === 0) {
-
+                // Cria novo usuário
                 $hash = password_hash($password, PASSWORD_DEFAULT);
 
                 $newUser = new User();

@@ -31,12 +31,11 @@ class UserController extends Controller
         $password = $request->input('password');
         $password_confirm = $request->input('password_confirm');
 
-        $user = User::find($this->loggedUser['id']);//Pega usuario logadfo
+        $user = User::find($this->loggedUser['id']);//Pega usuario logado
         // NAME
         if($name) {// Se trocou nome pega o nome
             $user->name = $name;
         }
-
         // EMAIL
         if($email) {// se mandou email
             if($email != $user->email) {// Se email diferente do atual
@@ -49,7 +48,6 @@ class UserController extends Controller
                 }
             }
         }
-
         // BIRTHDATE
         if($birthdate) {// Se mandou data nasc...
             if(strtotime($birthdate) === false) {// Se é inválida...
@@ -58,9 +56,7 @@ class UserController extends Controller
             }
             // Senão troca data de nascimento
             $user->birthdate = $birthdate;           
-        }
-        
-
+        }        
         // CITY
         if($city) {
             $user->city = $city;
@@ -69,7 +65,6 @@ class UserController extends Controller
         if($work) {
             $user->work = $work;
         }
-
         // SENHA
         if($password && $password_confirm) {
             if($password === $password_confirm) {
@@ -92,7 +87,7 @@ class UserController extends Controller
         $array = ['error' => ''];
         // Tipos de imagens permitidos
         $allowedTypes = ['image/jpg', 'image/jpeg', 'image/png'];
-
+        // Pega a imagem do campo
         $image = $request->file('avatar');
 
         if($image) {
@@ -153,7 +148,7 @@ class UserController extends Controller
                     ->fit(850, 310)
                     ->save($destPath.'/'.$filename);
 
-                // Pega usuário logado e troca avatar
+                // Pega usuário logado e troca cover
                 $user = User::find($this->loggedUser['id']);
                 $user->cover = $filename;
                 $user->save();
@@ -255,16 +250,16 @@ class UserController extends Controller
     public function followers($id) {
         // GET api/user/123/followers
         $array = ['error' => ''];
-
+        // Verificar se usuário existe
         $userExists = User::find($id);
         if($userExists) {
-
+            // Lista de seguidores do usuário e que o usuário segue
             $followers = UserRelation::where('user_to', $id)->get();
             $following = UserRelation::where('user_from', $id)->get();
 
-            $array['followers'] = [];
-            $array['following'] = [];
-
+            $array['followers'] = [];// Pega infos dos seguidores
+            $array['following'] = [];// Pega infos de quem é seguido
+            // Pega infos dos seguidores
             foreach($followers as $item) {
                 $user = User::find($item['user_from']);
                 $array['followers'][] = [
@@ -273,7 +268,7 @@ class UserController extends Controller
                     'avatar' => url('media/avatars/'.$user['avatar'])
                 ];
             }
-
+            // Pega infos de quem é seguido
             foreach($following as $item) {
                 $user = User::find($item['user_from']);
                 $array['following'][] = [
